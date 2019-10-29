@@ -1,15 +1,17 @@
 package com.github.aveldanov.kafka.tutorial1;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
-public class ProducerDemo {
+public class ProducerDemoWithCallback {
 
   public static void main(String[] args) {
+    Logger logger= LoggerFactory.getLogger(ProducerDemoWithCallback.class);
+
     String bootstrapServers = "127.0.0.1:9092";
     // create Producer properties
     Properties properties = new Properties();
@@ -27,12 +29,23 @@ public class ProducerDemo {
 
     //create a producer record
     // key - String, value - String
-    ProducerRecord<String, String> record = new ProducerRecord<String, String>("first_topic", "hello World");
+    final ProducerRecord<String, String> record = new ProducerRecord<String, String>("first_topic", "hello World");
 
     // send data - async
 
 
-    producer.send(record);
+    producer.send(record, new Callback() {
+      public void onCompletion(RecordMetadata recordMetadata, Exception e) {
+        // executes every time record is succcessfully sent or an execption is thrown
+      if(e!=null){
+        //record was successfully sent
+
+      }
+      else{
+        recordMetadata.
+      }
+      }
+    });
     //flush data - wait for async data - buffers output
     producer.flush();
     // flush and close producer
