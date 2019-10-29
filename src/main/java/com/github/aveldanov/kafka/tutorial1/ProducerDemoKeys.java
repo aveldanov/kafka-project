@@ -6,11 +6,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 
-public class ProducerDemoWithCallback {
+public class ProducerDemoKeys {
 
-  public static void main(String[] args) {
-    final Logger logger = LoggerFactory.getLogger(ProducerDemoWithCallback.class);
+  public static void main(String[] args) throws
+          ExecutionException,
+          InterruptedException {
+    final Logger logger = LoggerFactory.getLogger(ProducerDemoKeys.class);
 
     String bootstrapServers = "127.0.0.1:9092";
     // create Producer properties
@@ -26,15 +29,22 @@ public class ProducerDemoWithCallback {
     // create the producer
     // key - String, value - String
     KafkaProducer<String, String> producer = new KafkaProducer<String, String>(properties);
-    for (int i = 0; i < 10; i++) {
 
+
+    for (int i = 0; i < 10; i++) {
       //create a producer record
+      String topic = "first_topic";
+      String value = "Hello World " + Integer.toString(i);
+      String key = "id_" + Integer.toString(i);
+
+
       // key - String, value - String
-      ProducerRecord<String, String> record = new ProducerRecord<String, String>("first_topic", "hello World " + Integer.toString(i));
+      ProducerRecord<String, String> record = new ProducerRecord<String, String>(topic, key, value);
+
+      logger.info("Key: "+key);
+
 
       // send data - async
-
-
       producer.send(record, new Callback() {
         public void onCompletion(RecordMetadata recordMetadata, Exception e) {
           // executes every time record is succcessfully sent or an execption is thrown
@@ -50,7 +60,7 @@ public class ProducerDemoWithCallback {
             logger.error("Error while producing: ", e);
           }
         }
-      });
+      }).get(); // block the .send() to make it sync - dont do this in production
 
 
     }
