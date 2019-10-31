@@ -39,7 +39,6 @@ public class ConsumerDemoWithThread {
             groupId,
             topic,
             latch
-
     );
 
     //start the thread
