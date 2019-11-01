@@ -21,6 +21,10 @@ import java.util.concurrent.TimeUnit;
 public class TwitterProducer {
 
   Logger logger = LoggerFactory.getLogger(TwitterProducer.class.getName());
+  String consumerKey = "Q361PLWeg45Fk0mXam9KGXziT";
+  String consumerSecret = "DyHTgSkFt46mx3nGo8alx14rRzreBYZo2vld37zeRYCvDNpSVP";
+  String token = "1017131590571343872-rETtuIpYgrurD8M2MGc3QZJPzXExiK";
+  String secret = "8HyVCJjlQiswC20e8kaufzcDjPfVYqjF6uVA2CQ5r2Phd";
 
 
   //constructor
@@ -67,10 +71,6 @@ public class TwitterProducer {
 logger.info("End of application");
   }
 
-  String consumerKey = "Q361PLWeg45Fk0mXam9KGXziT";
-  String consumerSecret = "DyHTgSkFt46mx3nGo8alx14rRzreBYZo2vld37zeRYCvDNpSVP";
-  String token = "1017131590571343872-rETtuIpYgrurD8M2MGc3QZJPzXExiK";
-  String secret = "8HyVCJjlQiswC20e8kaufzcDjPfVYqjF6uVA2CQ5r2Phd";
 
   public Client createTwitterClient(BlockingQueue<String> msgQueue) {
 
