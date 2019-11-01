@@ -65,8 +65,8 @@ public class TwitterProducer {
         logger.info(msg);
 
       }
-      something(msg);
-      profit();
+//      something(msg);
+//      profit();
     }
 logger.info("End of application");
   }
@@ -78,7 +78,7 @@ logger.info("End of application");
     Hosts hosebirdHosts = new HttpHosts(Constants.STREAM_HOST);
     StatusesFilterEndpoint hosebirdEndpoint = new StatusesFilterEndpoint();
     // Optional: set up some followings and track terms
-    List<String> terms = Lists.newArrayList("kafka");
+    List<String> terms = Lists.newArrayList("bitcoin");
     hosebirdEndpoint.trackTerms(terms);
 
     // These secrets should be read from a config file
