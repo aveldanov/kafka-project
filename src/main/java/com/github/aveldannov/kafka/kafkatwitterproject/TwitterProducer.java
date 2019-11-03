@@ -10,8 +10,7 @@ import com.twitter.hbc.core.endpoint.StatusesFilterEndpoint;
 import com.twitter.hbc.core.processor.StringDelimitedProcessor;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +28,7 @@ public class TwitterProducer {
   String consumerSecret = "DyHTgSkFt46mx3nGo8alx14rRzreBYZo2vld37zeRYCvDNpSVP";
   String token = "1017131590571343872-rETtuIpYgrurD8M2MGc3QZJPzXExiK";
   String secret = "8HyVCJjlQiswC20e8kaufzcDjPfVYqjF6uVA2CQ5r2Phd";
+  List<String> terms = Lists.newArrayList("neontestword");
 
 
   //constructor
@@ -57,6 +57,19 @@ public class TwitterProducer {
     KafkaProducer<String, String> producer = createKafkaProducer();
 
 
+
+    // add shutdown hook
+    Runtime.getRuntime().addShutdownHook(new Thread(()->{
+      logger.info("Stopping application...");
+      logger.info("Shutting down client from twitter...");
+      client.stop();
+      logger.info("Closing producer...");
+      producer.close();
+      logger.info("done!");
+
+    }));
+
+
     // loop to send tweets to kafka
     // on a different thread, or multiple different threads....
     while (!client.isDone()) {
@@ -69,6 +82,16 @@ public class TwitterProducer {
       }
       if (msg != null) {
         logger.info(msg);
+        producer.send(new ProducerRecord<>("twitter_tweets", null, msg), new Callback() {
+          @Override
+          public void onCompletion(RecordMetadata recordMetadata, Exception e) {
+            if (e != null) {
+              logger.error("Error: ", e);
+
+            }
+          }
+        });
+
 
       }
       //      something(msg);
@@ -84,7 +107,7 @@ public class TwitterProducer {
     Hosts hosebirdHosts = new HttpHosts(Constants.STREAM_HOST);
     StatusesFilterEndpoint hosebirdEndpoint = new StatusesFilterEndpoint();
     // Optional: set up some followings and track terms
-    List<String> terms = Lists.newArrayList("bitcoin");
+//    List<String> terms = Lists.newArrayList();
     hosebirdEndpoint.trackTerms(terms);
 
     // These secrets should be read from a config file
@@ -108,10 +131,6 @@ public class TwitterProducer {
     String bootstrapServers = "127.0.0.1:9092";
     // create Producer properties
     Properties properties = new Properties();
-    //    properties.setProperty("bootstarp.servers", bootstrapServers);
-    //    properties.setProperty("key.serializer", StringSerializer.class.getName());
-    //    properties.setProperty("value.serializer", StringSerializer.class.getName());
-
     properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
     properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
     properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
