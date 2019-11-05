@@ -120,6 +120,7 @@ public class TwitterProducer {
             .endpoint(hosebirdEndpoint)
             .processor(new StringDelimitedProcessor(msgQueue));
 
+
     Client hosebirdClient = builder.build();
     return hosebirdClient;
 
